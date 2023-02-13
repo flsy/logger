@@ -4,6 +4,7 @@
   "packageManager": "yarn@3.0.1",
   "main": "build/index.js",
   "types": "build/index.d.ts",
+  "license": "ISC",
   "files": [
     "build"
   ],
