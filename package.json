@@ -10,6 +10,8 @@
   "scripts": {
     "build:code": "tsc",
     "build:docs": "typedoc --out docs src/index.ts --includeVersion",
+    "prepare": "yarn build",
+    "prepublishOnly": "yarn build",
     "build": "yarn build:code && yarn build:docs",
     "test": "jest",
     "testWithCoverage": "jest --ci --reporters=default --reporters=jest-junit --coverage --coverageReporters=cobertura"
@@ -28,7 +30,7 @@
   },
   "dependencies": {
     "fputils": "^1.2.8",
-    "uuid": "^8.3.2",
+    "uuid": "^9.0.0",
     "winston": "^3.8.1",
     "winston-daily-rotate-file": "^4.7.1"
   }

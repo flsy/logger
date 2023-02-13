@@ -2,3 +2,8 @@
 build
 node_modules
 tmp
+
+
+junit.xml
+coverage
+docs
