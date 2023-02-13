@@ -1,6 +1,6 @@
 {
   "name": "@falsy/logger",
-  "version": "3.0.0",
+  "version": "3.0.1",
   "packageManager": "yarn@3.0.1",
   "main": "build/index.js",
   "types": "build/index.d.ts",
