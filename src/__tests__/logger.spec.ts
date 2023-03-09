@@ -50,7 +50,7 @@ describe('logger', () => {
   });
 
   it('should not log debug when log level is info ', async () => {
-    logger().info(undefined, 'function-2', 'my message');
+    logger().debug(undefined, 'function-2', 'my message');
 
     const log = await readLog();
     expect(log).toEqual(['']);
