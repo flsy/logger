@@ -49,6 +49,13 @@ describe('logger', () => {
     expect(rest[3]).toEqual('00000000-0000-0000-0000-000000000000');
   });
 
+  it('should not log debug when log level is info ', async () => {
+    logger().info(undefined, 'function-2', 'my message');
+
+    const log = await readLog();
+    expect(log).toEqual(['']);
+  });
+
   it('logs error', async () => {
     logger().error('tr1', 'function-2', 'my message', { message: 'System threw error' } as any);
 
