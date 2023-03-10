@@ -72,7 +72,7 @@ const getTransports = (config: IConfig): Transport[] =>
   pipe(
     [
       new transports.Console({
-        level: 'debug',
+        level: config.level || 'debug',
         format: format.combine(format.colorize(), format.timestamp(), format.json(), customFormat),
         handleExceptions: true,
       }),
