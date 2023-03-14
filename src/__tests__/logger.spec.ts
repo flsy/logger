@@ -93,30 +93,30 @@ describe('logger', () => {
 
   it('logs audit message successfully with data as object', async () => {
     const testData = { count: 5 };
-    logger().audit('traceid', 'John snow', testData, 'logs in');
+    logger().audit('traceid', 'John snow', 'logs in', testData);
     const [_, ...loggedMessage] = await readLog();
 
     expect(loggedMessage).toEqual(['test', 'hostname', '0', 'traceid', 'test-app', 'audit', 'John snow', 'logs in', JSON.stringify(testData) + EOL]);
   });
 
   it('logs audit message successfully with data as string', async () => {
-    logger().audit('traceid', 'John snow', 'data: 5', 'logs in');
+    logger().audit('traceid', 'John snow', 'logs in', 'data: 5');
     const [_, ...loggedMessage] = await readLog();
 
     expect(loggedMessage).toEqual(['test', 'hostname', '0', 'traceid', 'test-app', 'audit', 'John snow', 'logs in', 'data: 5' + EOL]);
   });
 
   it('logs audit message successfully with no data provided', async () => {
-    logger().audit('traceid', 'John snow', undefined, 'logs in');
+    logger().audit('traceid', 'John snow', 'logs in', undefined);
     const [_, ...loggedMessage] = await readLog();
 
-    expect(loggedMessage).toEqual(['test', 'hostname', '0', 'traceid', 'test-app', 'audit', 'John snow', 'logs in', '' + EOL]);
+    expect(loggedMessage).toEqual(['test', 'hostname', '0', 'traceid', 'test-app', 'audit', 'John snow', 'logs in' + EOL]);
   });
 
   it('logs audit when debug level is selected.', async () => {
     const logger = () => getLogger({ hostname: 'hostname', directory: tmpFolder, serviceName: 'test-app', level: 'debug', environment: 'test' });
 
-    logger().audit('trace2', 'fn2', 'mess2', 'message');
+    logger().audit('trace2', 'fn2', 'message', 'mess2');
     const [timestamp, ...rest] = await readLog();
     expect(timestamp).toEqual(expect.stringContaining(today()));
     expect(rest).toEqual(['test', 'hostname', '0', 'trace2', 'test-app', 'audit', 'fn2', 'message', `mess2${EOL}`]);
@@ -125,7 +125,7 @@ describe('logger', () => {
   it('logs audit when info level is selected.', async () => {
     const logger = () => getLogger({ hostname: 'hostname', directory: tmpFolder, serviceName: 'test-app', level: 'info', environment: 'test' });
 
-    logger().audit('trace2', 'fn2', 'mess2', 'message');
+    logger().audit('trace2', 'fn2',  'message', 'mess2');
     const [timestamp, ...rest] = await readLog();
     expect(timestamp).toEqual(expect.stringContaining(today()));
     expect(rest).toEqual(['test', 'hostname', '0', 'trace2', 'test-app', 'audit', 'fn2', 'message', `mess2${EOL}`]);

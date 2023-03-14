@@ -17,12 +17,13 @@ const auditFormat = (props: TransformableInfo) => {
     props.buildVersion ?? '0',
     props.traceId || defaultUUID(),
     props.service,
-    'audit',
+    props.level,
     props.user,
     props.message,
-    toString(props.data),
   ];
-
+  if (props.data) {
+    bits.push(toString(props.data));
+  }
   return bits.join('|');
 };
 
@@ -42,22 +43,27 @@ const commonFormat = (props: TransformableInfo) => {
   return bits.join('|');
 };
 
-const customFormat = format.printf((props) => {
-  return props.level === 'notice' ? auditFormat(props) : commonFormat(props);
-});
+/**
+ * Zkontroluje, že auditní logování je správně rozpoznáno buď jako obyčejný string, nebo jako "barevný string"
+ * @param {string} level
+ * @return {boolean}
+ */
+const isAuditLevel = (level: string): boolean => level.includes('audit');
+
+const customFormat = format.printf((props) => (isAuditLevel(props.level) ? auditFormat(props) : commonFormat(props)));
 
 const customLevels = {
   levels: {
     error: 0,
     warn: 1,
-    notice: 2,
+    audit: 2,
     info: 3,
     debug: 4,
   },
   colors: {
     error: 'red',
     warn: 'yellow',
-    notice: 'white',
+    audit: 'blue',
     info: 'green',
     debug: 'grey',
   },
@@ -125,6 +131,6 @@ export const getLogger = (config: IConfig): ILogger => {
     warn: curry((traceId: Optional<string>, functionName: string, message: string) => logger.log('warn', message, { traceId, functionName })),
     info: curry((traceId: Optional<string>, functionName: string, message: string) => logger.log('info', message, { traceId, functionName })),
     error: curry((traceId: Optional<string>, functionName: string, message: string, error: Error) => logger.log('error', message, { traceId, functionName, error })),
-    audit: curry((traceId: Optional<string>, user: string, data: Optional<object | string>, message: string) => logger.log('notice', message, { traceId, user, data })),
+    audit: curry((traceId: Optional<string>, user: string, message: string, data: Optional<object | string>) => logger.log('audit', message, { traceId, user, data })),
   };
 };

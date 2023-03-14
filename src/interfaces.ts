@@ -15,6 +15,13 @@ export type ILog = {
 };
 
 export type ILogErrorFinal = (message: string, error: Error) => void;
+export type ILogAuditFinal = (user: string, message: string, data: Optional<object | string>) => void;
+
+export type ILogAudit = {
+  (traceId: Optional<string>, user: string, message: string, data: Optional<object | string>): void;
+  (traceId: Optional<string>): ILogAuditFinal;
+};
+
 
 export type ILogErrorWithTraceId = {
   (functionName: string, message: string, error: Error): void;
@@ -47,7 +54,7 @@ export interface ILogger {
   /**
    * **audit** level - Vhodný pro logování činností uživatelů. Logy podávají informaci o tom, že uživatel A dělá činnost B a poslal data C.
    */
-  audit: ILog;
+  audit: ILogAudit;
 }
 
 export interface ILoggerWithTraceId {
@@ -55,7 +62,7 @@ export interface ILoggerWithTraceId {
   warn: ILogWithTraceId;
   info: ILogWithTraceId;
   error: ILogErrorWithTraceId;
-  audit: ILogWithTraceId;
+  audit: ILogAuditFinal;
   traceId: string;
 }
 
