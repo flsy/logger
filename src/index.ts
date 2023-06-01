@@ -19,6 +19,7 @@ const auditFormat = (props: TransformableInfo) => {
     props.service,
     props.level,
     props.user,
+    props.displayName,
     props.message,
   ];
   if (props.data) {
@@ -131,6 +132,6 @@ export const getLogger = (config: IConfig): ILogger => {
     warn: curry((traceId: Optional<string>, functionName: string, message: string) => logger.log('warn', message, { traceId, functionName })),
     info: curry((traceId: Optional<string>, functionName: string, message: string) => logger.log('info', message, { traceId, functionName })),
     error: curry((traceId: Optional<string>, functionName: string, message: string, error: Error) => logger.log('error', message, { traceId, functionName, error })),
-    audit: curry((traceId: Optional<string>, user: string, message: string, data: Optional<object | string>) => logger.log('audit', message, { traceId, user, data })),
+    audit: curry((traceId: Optional<string>, user: string, displayName: string, message: string, data: Optional<object | string>) => logger.log('audit', message, { traceId, user, data, displayName })),
   };
 };
