@@ -18,7 +18,7 @@ export type ILogErrorFinal = (message: string, error: Error) => void;
 export type ILogAuditFinal = (user: string, message: string, data: Optional<object | string>) => void;
 
 export type ILogAudit = {
-  (traceId: Optional<string>, user: string, message: string, data: Optional<object | string>): void;
+  (traceId: Optional<string>, user: string, displayName: string, message: string, data: Optional<object | string>): void;
   (traceId: Optional<string>): ILogAuditFinal;
 };
 
