@@ -1,3 +1,4 @@
+import dgram from 'dgram';
 import { compose } from 'fputils';
 import * as fs from 'fs';
 import { EOL } from 'os';
@@ -163,5 +164,38 @@ describe('logger', () => {
 
     const ls = (folder: string) => fs.readdirSync(folder);
     expect(ls(tmpFolder).findIndex((file) => file.startsWith('log.'))).toBeGreaterThan(-1);
+  });
+
+  /** This test cannot be used now, because winston syslogger does not close its UDP connection after logger use.*/
+  xit('successfully sends logs to syslog when syslog config provided.', async () => {
+    const logger = () =>
+      getLogger({ hostname: 'hostname', directory: tmpFolder, serviceName: 'test-app', level: 'info', environment: 'test', syslogServer: 'localhost', syslogPort: 10514 });
+
+    let socketHasStarted = false;
+
+    const socket = dgram.createSocket('udp4');
+
+    let syslogMessage = '';
+    socket.on('message', (msg) => {
+      syslogMessage = msg.toString();
+    });
+    socket.on('listening', () => {
+      socketHasStarted = true;
+      logger().audit('trace2', 'user', 'syslog-message', 'message to syslog', {});
+    });
+    socket.bind(10514);
+ 
+    while (!socketHasStarted) {
+      await delay();
+    }
+
+    socket.close()    
+
+    const [timestamp, ...rest] = await readLog();
+    expect(timestamp.startsWith(today())).toBe(true);
+    expect(rest).toEqual(['test', 'hostname', '0', 'trace2', 'test-app', 'audit', 'user', 'syslog-message', 'message to syslog', `{}${EOL}`]);
+
+    const [syslogTimestamp, ...syslogRest] = syslogMessage.split('|');
+    expect(syslogRest).toEqual(['test', 'hostname', '0', 'trace2', 'test-app', 'audit', 'user', 'syslog-message', 'message to syslog', `{}`]);
   });
 });
