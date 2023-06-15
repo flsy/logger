@@ -8,6 +8,8 @@ import { appendWhen, defaultUUID, toString } from './utils';
 export * from './interfaces';
 export * from './mocks';
 export * from './utils';
+import { Syslog } from 'winston-syslog';
+
 
 const auditFormat = (props: TransformableInfo) => {
   const bits = [
@@ -17,7 +19,7 @@ const auditFormat = (props: TransformableInfo) => {
     props.buildVersion ?? '0',
     props.traceId || defaultUUID(),
     props.service,
-    props.level,
+    'audit',
     props.user,
     props.displayName,
     props.message,
@@ -49,7 +51,7 @@ const commonFormat = (props: TransformableInfo) => {
  * @param {string} level
  * @return {boolean}
  */
-const isAuditLevel = (level: string): boolean => level.includes('audit');
+const isAuditLevel = (level: string): boolean => level.includes('notice');
 
 const customFormat = format.printf((props) => (isAuditLevel(props.level) ? auditFormat(props) : commonFormat(props)));
 
@@ -57,14 +59,14 @@ const customLevels = {
   levels: {
     error: 0,
     warn: 1,
-    audit: 2,
+    notice: 2,
     info: 3,
     debug: 4,
   },
   colors: {
     error: 'red',
     warn: 'yellow',
-    audit: 'blue',
+    notice: 'blue',
     info: 'green',
     debug: 'grey',
   },
@@ -92,11 +94,22 @@ const getTransports = (config: IConfig): Transport[] =>
           filename: `${config.fileName || 'log.%DATE%'}`,
           datePattern: 'YYYY-MM-DD',
           zippedArchive: true,
-          maxFiles: '30d',
+          maxFiles: '30d',  
           utc: true,
           handleExceptions: true,
         }),
       config.directory,
+    ),
+    appendWhen(
+      () => new Syslog({
+        host: config.syslogServer,
+        port: config.syslogPort,
+        protocol: 'udp',
+        type: '5424',
+        level: config.level || 'info',
+        handleExceptions: true,
+      }),
+      config.syslogServer && config.syslogPort,
     ),
   );
 
@@ -132,6 +145,6 @@ export const getLogger = (config: IConfig): ILogger => {
     warn: curry((traceId: Optional<string>, functionName: string, message: string) => logger.log('warn', message, { traceId, functionName })),
     info: curry((traceId: Optional<string>, functionName: string, message: string) => logger.log('info', message, { traceId, functionName })),
     error: curry((traceId: Optional<string>, functionName: string, message: string, error: Error) => logger.log('error', message, { traceId, functionName, error })),
-    audit: curry((traceId: Optional<string>, user: string, displayName: string, message: string, data: Optional<object | string>) => logger.log('audit', message, { traceId, user, data, displayName })),
+    audit: curry((traceId: Optional<string>, user: string, displayName: string, message: string, data: Optional<object | string>) => logger.log('notice', message, { traceId, user, data, displayName })),
   };
 };

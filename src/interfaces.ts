@@ -104,4 +104,12 @@ export interface IConfig {
    * Označení verze buildu
    */
   buildVersion?: string;
+   /**
+   * Adresa syslog serveru
+   */
+   syslogServer?: string;
+   /**
+    * Port syslog serveru
+    */
+   syslogPort?: number;
 }
