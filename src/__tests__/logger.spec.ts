@@ -11,7 +11,7 @@ const today = (): string => {
 };
 
 const tmpFolder = __dirname + '/tmp';
-const delay = (n: number = 100) => new Promise((resolve) => setTimeout(resolve, n));
+const delay = () => new Promise((resolve) => setTimeout(resolve, 100));
 const deleteTmpFolder = () => fs.rmSync(tmpFolder, { force: true, recursive: true });
 
 const directoryExists = () => fs.existsSync(tmpFolder);
