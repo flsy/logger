@@ -79,13 +79,16 @@ const customLevels = {
  */
 const getTransports = (config: IConfig): Transport[] =>
   pipe(
-    [
+    [],
+    appendWhen(
+      () =>
       new transports.Console({
         level: config.level || 'debug',
         format: format.combine(format.colorize(), format.timestamp(), format.json(), customFormat),
         handleExceptions: true,
       }),
-    ] as Transport[],
+      config.enableConsoleLog,
+    ),
     appendWhen(
       () =>
         new DailyRotateFile({

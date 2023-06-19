@@ -112,4 +112,9 @@ export interface IConfig {
     * Port syslog serveru
     */
    syslogPort?: number;
+   /**
+    * Pokud false, tak logger nebude logovat do console. 
+    * Užitečné pro šetření místa na disku pokud už loguji do souboru.
+    */
+   enableConsoleLog?: boolean;
 }
